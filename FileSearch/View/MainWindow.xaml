@@ -8,10 +8,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="700">
 
-    <!--<Window.Resources>
-        <DataTemplate DataType="{x:Type viewModel:MainWindowViewModel}">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModel:FileViewModel}">
+            <TextBlock >
+               <Run Text="{Binding Path=Name, Mode=OneWay}" FontSize="14" FontWeight="Bold"/>
+                <Run Text=" ("/>
+                <Run Text="{Binding Path=Path, Mode=OneWay}"/>
+                <Run Text=")"/>
+            </TextBlock>
         </DataTemplate>
-    </Window.Resources>-->
+    </Window.Resources>
 
     <Grid>
         
@@ -31,15 +37,15 @@
                 <ColumnDefinition Width="90"/>
             </Grid.ColumnDefinitions>
 
-            <ComboBox Margin="3"/>
+            <ComboBox  SelectedItem="{Binding Path=SelectedItem}" ItemsSource="{Binding Path=Discs}" Margin="3"/>
             <TextBox Grid.Column="1" Margin="3" />
-            <Button Grid.Column="2" Margin="3" Content="Search"/>
+            <Button Command="{Binding Path=CommandTheSearch}" Grid.Column="2" Margin="3" Content="Search"/>
             <Button Grid.Column="3" Margin="3" Content="Pause"/>
             <Button Grid.Column="4" Margin="3" Content="Resume"/>
             <Button Grid.Column="5" Margin="3" Content="Stop"/>
         </Grid>
 
-        <ListBox Grid.Row="1" Margin="5,3,5,5" ItemsSource="{Binding Path=Colaction}"></ListBox>
-        
+        <ListBox Grid.Row="1" Margin="5,3,5,5" ItemsSource="{Binding Path=Files}"/>
+
     </Grid>
 </Window>
