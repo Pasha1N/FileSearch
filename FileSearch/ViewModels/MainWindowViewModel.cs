@@ -13,28 +13,41 @@ namespace FileSearch.ViewModels
 {
     public class MainWindowViewModel : FileSearch.EventINotifyPropertyChanged
     {
-        private object sync = new object();
         private ICollection<string> discs = new List<string>();
         private FileSearch.Command.Command commandTheSearch;
+        private bool commandSearchOn = false;
         private FileSearch.Command.Command commandStopThread;
+        private bool commandStopOn = false;
         private FileSearch.Command.Command commandPauseThread;
+        private bool commandPauseOn = false;
+        private FileSearch.Command.Command commandResumeThread;
+        private bool commandResumeOn = false;
         private ICollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
         private ICollection<FileViewModel> fileBroker = new List<FileViewModel>();
         private string mainDirectory;
         private string selectedItem;
-        private Thread thread = null;
+        private Thread threadForFileSearch = null;
+        private string pathToFile = string.Empty;
 
         public MainWindowViewModel()
         {
             DisksLoading();
-
-            commandTheSearch = new FileSearch.Command.DelegateCommand(Search);
-            commandStopThread = new FileSearch.Command.DelegateCommand(StopThread);
-            commandPauseThread = new FileSearch.Command.DelegateCommand(PauseThread);
+            commandTheSearch = new FileSearch.Command.DelegateCommand(Search, CommandSearchOn);
+            commandStopThread = new FileSearch.Command.DelegateCommand(StopThread, CommandStopOn);
+            commandPauseThread = new FileSearch.Command.DelegateCommand(PauseThread, CommandPauseOn);
+            commandResumeThread = new FileSearch.Command.DelegateCommand(ResumeThread, CommandResumeOn);
         }
 
         public ICommand CommandTheSearch => commandTheSearch;
+
+        public ICommand CommandStopThread => commandStopThread;
+
+        public ICommand CommandPauseThread => commandPauseThread;
+
+        public ICommand CommandResumeThread => commandResumeThread;
+
         public IEnumerable<string> Discs => discs;
+
         public string SelectedItem
         {
             get => selectedItem;
@@ -45,35 +58,77 @@ namespace FileSearch.ViewModels
                 OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(SelectedItem)));
             }
         }
+
         public IEnumerable<FileViewModel> Files => files;
 
+        public string PathToFile
+        {
+            get => pathToFile;
+            set
+            {
+                pathToFile = value;
+                OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(PathToFile)));
+                commandSearchOn = PathToFile.Length > 0;
+                commandTheSearch.OnCanExecuteChanged(EventArgs.Empty);
+            }
+        }
+
+        private bool CommandStopOn()
+        {
+            return commandStopOn;
+        }
+
+        private bool CommandPauseOn()
+        {
+            return commandPauseOn;
+        }
+
+        private bool CommandSearchOn()
+        {
+            return commandSearchOn;
+        }
+
+        private bool CommandResumeOn()
+        {
+            return commandResumeOn;
+        }
 
         private void Search()
         {
-           thread = new Thread(GetDirectories) { IsBackground = true };
-            thread.Start(selectedItem);
+            threadForFileSearch = new Thread(GetDirectories) { IsBackground = true };
+            threadForFileSearch.Start(selectedItem);
+            commandPauseOn = true;
+            commandPauseThread.OnCanExecuteChanged(EventArgs.Empty);
+            commandStopOn = true;
+            commandStopThread.OnCanExecuteChanged(EventArgs.Empty);
         }
 
         private void StopThread()
         {
-            thread.Abort();
+            threadForFileSearch.Abort();
         }
 
         private void PauseThread()
         {
-            if (thread.IsAlive)
+            if (threadForFileSearch.IsAlive)
             {
-                thread.Suspend();
+                threadForFileSearch.Suspend();
+                commandPauseOn = false;
+                commandResumeOn = true;
+                commandResumeThread.OnCanExecuteChanged(EventArgs.Empty);
             }
-            else
-            {
-                thread.Resume();
-            }
+        }
+
+        private void ResumeThread()
+        {
+            threadForFileSearch.Resume();
+            commandPauseOn = true;
+            commandResumeOn = false;
         }
 
         public void GetItemSearching(FileViewModel fileView)
         {
-            files.Add(fileView);    
+            files.Add(fileView);
         }
 
         public void GetDirectories(object stringPath)
@@ -109,7 +164,7 @@ namespace FileSearch.ViewModels
             }
         }
 
-        public void DisksLoading()//+
+        public void DisksLoading()
         {
             DriveInfo[] driveInfos = DriveInfo.GetDrives();
 

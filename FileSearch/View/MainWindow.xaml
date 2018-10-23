@@ -38,11 +38,11 @@
             </Grid.ColumnDefinitions>
 
             <ComboBox  SelectedItem="{Binding Path=SelectedItem}" ItemsSource="{Binding Path=Discs}" Margin="3"/>
-            <TextBox Grid.Column="1" Margin="3" />
+            <TextBox Text="{Binding Path=PathToFile,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3"  />
             <Button Command="{Binding Path=CommandTheSearch}" Grid.Column="2" Margin="3" Content="Search"/>
-            <Button Grid.Column="3" Margin="3" Content="Pause"/>
-            <Button Grid.Column="4" Margin="3" Content="Resume"/>
-            <Button Grid.Column="5" Margin="3" Content="Stop"/>
+            <Button Command="{Binding Path=CommandPauseThread}" Grid.Column="3" Margin="3" Content="Pause"/>
+            <Button Command="{Binding Path=CommandResumeThread}" Grid.Column="4" Margin="3" Content="Resume"/>
+            <Button Command="{Binding Path= CommandStopThread}" Grid.Column="5" Margin="3" Content="Stop"/>
         </Grid>
 
         <ListBox Grid.Row="1" Margin="5,3,5,5" ItemsSource="{Binding Path=Files}"/>
