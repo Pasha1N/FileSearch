@@ -13,13 +13,13 @@ namespace FileSearch.ViewModels
 {
     public class MainWindowViewModel : FileSearch.EventINotifyPropertyChanged
     {
-
-
+        private object sync = new object();
         private ICollection<string> discs = new List<string>();
         private FileSearch.Command.Command commandTheSearch;
         private FileSearch.Command.Command commandStopThread;
         private FileSearch.Command.Command commandPauseThread;
         private ICollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
+        private ICollection<FileViewModel> fileBroker = new List<FileViewModel>();
         private string mainDirectory;
         private string selectedItem;
         private Thread thread = null;
@@ -50,8 +50,8 @@ namespace FileSearch.ViewModels
 
         private void Search()
         {
-           thread = new Thread(GetItemsSearching) { IsBackground = true };
-            thread.Start();
+           thread = new Thread(GetDirectories) { IsBackground = true };
+            thread.Start(selectedItem);
         }
 
         private void StopThread()
@@ -71,39 +71,42 @@ namespace FileSearch.ViewModels
             }
         }
 
-        public void GetItemsSearching()
+        public void GetItemSearching(FileViewModel fileView)
         {
-            GetDirectories(selectedItem);
+            files.Add(fileView);    
         }
 
-        public void GetDirectories(string path)
+        public void GetDirectories(object stringPath)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            string path = (string)stringPath;
+
+            if (path != null)
             {
-                if (path != null)
+                try
                 {
-                    try
-                    {
-                        DirectoryInfo directoryInfo = new DirectoryInfo(path);
-                        DirectoryInfo[] directoryInfos = directoryInfo.GetDirectories();
+                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                    DirectoryInfo[] directoryInfos = directoryInfo.GetDirectories();
 
-                        foreach (DirectoryInfo directory in directoryInfos)
+                    foreach (DirectoryInfo directory in directoryInfos)
+                    {
+                        FileInfo[] currentDirectoryFiles = directory.GetFiles();
+
+                        foreach (FileInfo item in currentDirectoryFiles)
                         {
-                            FileInfo[] currentDirectoryFiles = directory.GetFiles();
-
-                            foreach (FileInfo item in currentDirectoryFiles)
+                            Application.Current.Dispatcher.Invoke(() =>
                             {
-                                files.Add(new FileViewModel(item));
-                            }
-
-                            GetDirectories(directory.FullName);
+                                GetItemSearching(new FileViewModel(item));
+                            });
                         }
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
+
+                        GetDirectories(directory.FullName);
                     }
                 }
-            });
+                catch (UnauthorizedAccessException)
+                {
+                    int a = 0;
+                }
+            }
         }
 
         public void DisksLoading()//+
