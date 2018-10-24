@@ -66,10 +66,13 @@ namespace FileSearch.ViewModels
             get => pathToFile;
             set
             {
-                pathToFile = value;
-                OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(PathToFile)));
-                commandSearchOn = PathToFile.Length > 0;
-                commandTheSearch.OnCanExecuteChanged(EventArgs.Empty);
+                if (pathToFile != value)
+                {
+                    pathToFile = value;
+                    OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(PathToFile)));
+                    commandSearchOn = PathToFile.Length > 0;
+                    commandTheSearch.OnCanExecuteChanged(EventArgs.Empty);
+                }
             }
         }
 
@@ -106,6 +109,16 @@ namespace FileSearch.ViewModels
         private void StopThread()
         {
             threadForFileSearch.Abort();
+            files.Clear();
+
+            commandSearchOn = PathToFile.Length > 0;
+            commandTheSearch.OnCanExecuteChanged(EventArgs.Empty);
+            commandStopOn = false;
+            commandStopThread.OnCanExecuteChanged(EventArgs.Empty);
+            commandPauseOn = false;
+            commandPauseThread.OnCanExecuteChanged(EventArgs.Empty);
+            commandResumeOn = false;
+            commandResumeThread.OnCanExecuteChanged(EventArgs.Empty);
         }
 
         private void PauseThread()
@@ -144,7 +157,8 @@ namespace FileSearch.ViewModels
 
                     foreach (DirectoryInfo directory in directoryInfos)
                     {
-                        FileInfo[] currentDirectoryFiles = directory.GetFiles();
+                          FileInfo[] currentDirectoryFiles = directory.GetFiles(pathToFile);
+                       // FileInfo[] currentDirectoryFiles = directory.GetFiles();
 
                         foreach (FileInfo item in currentDirectoryFiles)
                         {
@@ -159,7 +173,6 @@ namespace FileSearch.ViewModels
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    int a = 0;
                 }
             }
         }
