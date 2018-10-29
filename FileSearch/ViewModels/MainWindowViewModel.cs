@@ -10,17 +10,17 @@ namespace FileSearch.ViewModels
 {
     public class MainWindowViewModel : FileSearch.EventINotifyPropertyChanged
     {
-        private FileSearch.Command.Command commandPauseThread;
+        private readonly FileSearch.Command.Command commandPauseThread;
         private bool commandPauseOn = false;
-        private FileSearch.Command.Command commandResumeThread;
+        private readonly FileSearch.Command.Command commandResumeThread;
         private bool commandResumeOn = false;
-        private FileSearch.Command.Command commandStopThread;
+        private readonly FileSearch.Command.Command commandStopThread;
         private bool commandStopOn = false;
-        private FileSearch.Command.Command commandTheSearch;
+        private readonly FileSearch.Command.Command commandTheSearch;
         private bool commandSearchOn = false;
-        private ICollection<string> discs = new List<string>();
-        private ICollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
-        private ICollection<FileViewModel> fileBroker = new List<FileViewModel>();
+        private readonly ICollection<string> discs = new List<string>();
+        private readonly ICollection<FileViewModel> files = new ObservableCollection<FileViewModel>();
+        private readonly ICollection<FileViewModel> fileBroker = new List<FileViewModel>();
         private string fileName = string.Empty;
         private string mainDirectory;
         private string selectedItem;

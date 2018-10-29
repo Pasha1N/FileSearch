@@ -4,8 +4,8 @@ namespace FileSearch.ViewModels
 {
     public class FileViewModel
     {
-        private string name;
-        private string path;
+        private readonly string name;
+        private readonly string path;
 
         public FileViewModel(FileInfo fileInfo)
         {
