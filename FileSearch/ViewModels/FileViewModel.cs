@@ -12,7 +12,9 @@ namespace FileSearch.ViewModels
             name = fileInfo.Name;
             path = fileInfo.FullName;
         }
+
         public string Name => name;
+
         public string Path => path;
     }
 }
