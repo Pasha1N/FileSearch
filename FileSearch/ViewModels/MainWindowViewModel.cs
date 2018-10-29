@@ -106,7 +106,6 @@ namespace FileSearch.ViewModels
 
         public void GetDirectories(object stringPath)
         {
-
             string path = (string)stringPath;
             DirectoryInfo directoryInfo = null;
             DirectoryInfo[] directoryInfos = null;
