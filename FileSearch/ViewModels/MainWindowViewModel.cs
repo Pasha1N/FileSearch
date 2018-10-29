@@ -37,31 +37,11 @@ namespace FileSearch.ViewModels
 
         public ICommand CommandPauseThread => commandPauseThread;
 
-        private bool CommandPauseOn()
-        {
-            return commandPauseOn;
-        }
-
         public ICommand CommandResumeThread => commandResumeThread;
-
-        private bool CommandResumeOn()
-        {
-            return commandResumeOn;
-        }
 
         public ICommand CommandStopThread => commandStopThread;
 
-        private bool CommandStopOn()
-        {
-            return commandStopOn;
-        }
-
         public ICommand CommandTheSearch => commandTheSearch;
-
-        private bool CommandSearchOn()
-        {
-            return commandSearchOn;
-        }
 
         public IEnumerable<string> Discs => discs;
 
@@ -91,6 +71,26 @@ namespace FileSearch.ViewModels
                 mainDirectory = selectedItem;
                 OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(nameof(SelectedItem)));
             }
+        }
+
+        private bool CommandPauseOn()
+        {
+            return commandPauseOn;
+        }
+
+        private bool CommandResumeOn()
+        {
+            return commandResumeOn;
+        }
+
+        private bool CommandStopOn()
+        {
+            return commandStopOn;
+        }
+
+        private bool CommandSearchOn()
+        {
+            return commandSearchOn;
         }
 
         public void DisksLoading()
